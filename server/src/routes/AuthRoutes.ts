@@ -9,6 +9,11 @@ AuthRouter.route('/')
   );
 
 AuthRouter.route('/')
+  .post(
+    LoginController.authenticateByCnpj,
+  );
+
+AuthRouter.route('/')
   .patch(
     LoginController.refresh,
   );

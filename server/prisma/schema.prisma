@@ -1,23 +1,24 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// server/prisma/schema.prisma
 
 generator client {
-  provider      = "prisma-client-js"
+  provider = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
-
 
 generator dbml {
   provider = "prisma-dbml-generator"
 }
 
-model Usuario {
-  id         Int        @id @default(autoincrement())
-  cnpj       String     @unique
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User { 
+  id         String     @id @default(uuid()) 
+  cnpj       String     @unique              
   email      String     @unique
-  senha      String
+  password   String
   telefone   String?
 
   ong        ONG?
@@ -26,64 +27,64 @@ model Usuario {
 }
 
 model ONG {
-  id             Int       @id @default(autoincrement())
-  ods            String?
+  id              String   @id @default(uuid()) 
+  ods             String?
   
-  usuarioId      Int       @unique
-  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
+  userId          String   @unique @map("usuarioId") 
+  user            User     @relation(fields: [userId], references: [id]) 
 
   apoiosRecebidos Apoio[]
 }
 
 model Empresa {
-  id         Int       @id @default(autoincrement())
+  id              String   @id @default(uuid()) 
   
-  usuarioId  Int       @unique
-  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+  userId          String   @unique @map("usuarioId") 
+  user            User     @relation(fields: [userId], references: [id]) 
 
-  apoios     Apoio[]
-  criterios  Criterio[]
+  apoios          Apoio[]
+  criterios       Criterio[]
 }
 
 model Prefeitura {
-  id         Int       @id @default(autoincrement())
+  id         String   @id @default(uuid()) 
   nome       String
-  usuarioId  Int       @unique
-  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+  userId     String   @unique @map("usuarioId") 
+  user       User     @relation(fields: [userId], references: [id])
 
   apoios     Apoio[]
 }
 
 model Apoio {
-  id           Int        @id @default(autoincrement())
+  id           String      @id @default(uuid())
   data         DateTime
   valor        Float
   tipoAjuda    String
   documentacao String
 
-  empresaId    Int
-  ongId        Int
-  prefeituraId Int?
+  empresaId    String      
+  ongId        String      
+  prefeituraId String?     
 
-  empresa      Empresa    @relation(fields: [empresaId], references: [id])
-  ong          ONG        @relation(fields: [ongId], references: [id])
+  empresa      Empresa     @relation(fields: [empresaId], references: [id])
+  ong          ONG         @relation(fields: [ongId], references: [id])
   prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
 }
 
 model Criterio {
-  id         Int      @id @default(autoincrement())
+  id         String  @id @default(uuid())
   tipo       String
   pontuacao  Int
 
-  empresaId  Int
-  seloId     Int
+  empresaId  String 
+  seloId     String 
 
-  empresa    Empresa  @relation(fields: [empresaId], references: [id])
-  selo       Selo     @relation(fields: [seloId], references: [id])
+  empresa    Empresa @relation(fields: [empresaId], references: [id])
+  selo       Selo    @relation(fields: [seloId], references: [id])
 }
 
 model Selo {
-  id         Int        @id @default(autoincrement())
+  id         String   @id @default(uuid()) 
   tipo       String
   tier       String
 

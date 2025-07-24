@@ -1,3 +1,4 @@
+// server/src/controllers/LoginController.ts
 import { NextFunction, Request, Response } from 'express';
 import { compare } from 'bcryptjs';
 
@@ -6,6 +7,8 @@ import {
   TokenRepository,
   CookieRepository,
 } from '@repositories';
+import { Auth } from '@DTOs';
+import prisma from '@database';
 
 class LoginController {
   async login(req: Request, res: Response, next: NextFunction) {
@@ -31,7 +34,7 @@ class LoginController {
       }
 
       const accessToken = TokenRepository.generateAccessToken(user.id, '60s');
-      const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d');
+      const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d'); 
 
       CookieRepository.setCookie(res, 'refresh_token', refreshToken);
 
@@ -56,8 +59,6 @@ class LoginController {
     try {
       const refreshToken = req.cookies.refresh_token;
 
-      console.log(refreshToken);
-
       if (!refreshToken) {
         delete req.headers.authorization;
 
@@ -67,8 +68,7 @@ class LoginController {
         });
       }
 
-      const decodedRefreshToken =
-        TokenRepository.verifyRefreshToken(refreshToken);
+      const decodedRefreshToken = TokenRepository.verifyRefreshToken(refreshToken);
 
       if (!decodedRefreshToken) {
         delete req.headers.authorization;
@@ -91,7 +91,7 @@ class LoginController {
       CookieRepository.clearCookies(res, 'refresh_token');
 
       const newRefreshToken = TokenRepository.generateRefreshToken(
-        user.id,
+        user.id, 
         '1d',
       );
       const acessToken = TokenRepository.generateAccessToken(user.id, '30s');
@@ -123,6 +123,60 @@ class LoginController {
       res.locals = {
         status: 200,
         message: 'User logged out',
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async authenticateByCnpj(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { cnpj, password } = Auth.parse(req.body); 
+
+      const user = await prisma.user.findUnique({ 
+        where: { cnpj },
+        include: {
+          ong: true,   
+          empresa: true,  
+          prefeitura: true,
+        },
+      });
+
+      if (!user) {
+        return next({
+          status: 400, 
+          message: 'Credenciais inválidas.',
+        });
+      }
+
+      const checkPassword = await compare(password, user.password);
+
+      if (!checkPassword) {
+        return next({
+          status: 400,
+          message: 'Credenciais inválidas.',
+        });
+      }
+
+      const accessToken = TokenRepository.generateAccessToken(user.id, '60s'); 
+      const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d'); 
+
+      CookieRepository.setCookie(res, 'refresh_token', refreshToken);
+
+      const { password: _, ...loggedUser } = user;
+
+      res.locals = {
+        status: 200,
+        message: 'Autenticação bem-sucedida',
+        data: {
+          user: loggedUser,
+          ong: loggedUser.ong,     
+          empresa: loggedUser.empresa, 
+          prefeitura: loggedUser.prefeitura,
+          accessToken,
+        },
       };
 
       return next();

@@ -2,11 +2,11 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table Usuario {
-  id Int [pk, increment]
+Table User {
+  id String [pk]
   cnpj String [unique, not null]
   email String [unique, not null]
-  senha String [not null]
+  password String [not null]
   telefone String
   ong ONG
   empresa Empresa
@@ -14,65 +14,65 @@ Table Usuario {
 }
 
 Table ONG {
-  id Int [pk, increment]
+  id String [pk]
   ods String
-  usuarioId Int [unique, not null]
-  usuario Usuario [not null]
+  userId String [unique, not null]
+  user User [not null]
   apoiosRecebidos Apoio [not null]
 }
 
 Table Empresa {
-  id Int [pk, increment]
-  usuarioId Int [unique, not null]
-  usuario Usuario [not null]
+  id String [pk]
+  userId String [unique, not null]
+  user User [not null]
   apoios Apoio [not null]
   criterios Criterio [not null]
 }
 
 Table Prefeitura {
-  id Int [pk, increment]
+  id String [pk]
   nome String [not null]
-  usuarioId Int [unique, not null]
-  usuario Usuario [not null]
+  userId String [unique, not null]
+  user User [not null]
   apoios Apoio [not null]
 }
 
 Table Apoio {
-  id Int [pk, increment]
+  id String [pk]
   data DateTime [not null]
   valor Float [not null]
   tipoAjuda String [not null]
   documentacao String [not null]
-  empresaId Int [not null]
-  ongId Int [not null]
-  prefeituraId Int
+  empresaId String [not null]
+  ongId String [not null]
+  prefeituraId String
   empresa Empresa [not null]
   ong ONG [not null]
   prefeitura Prefeitura
 }
 
 Table Criterio {
-  id Int [pk, increment]
+  id String [pk]
   tipo String [not null]
   pontuacao Int [not null]
-  empresaId Int [not null]
-  seloId Int [not null]
+  empresaId String [not null]
+  seloId String [not null]
   empresa Empresa [not null]
   selo Selo [not null]
 }
 
 Table Selo {
-  id Int [pk, increment]
+  id String [pk]
   tipo String [not null]
   tier String [not null]
   criterios Criterio [not null]
 }
 
-Ref: ONG.usuarioId - Usuario.id
+Ref: ONG.userId - User.id
 
-Ref: Empresa.usuarioId - Usuario.id
+Ref: Empresa.userId - User.id
 
-Ref: Prefeitura.usuarioId - Usuario.id
+Ref: Prefeitura.userId - User.id
 
 Ref: Apoio.empresaId > Empresa.id
 
