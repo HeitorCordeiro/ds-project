@@ -1,5 +1,3 @@
-// server/prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -29,7 +27,6 @@ model User {
 model ONG {
   id              String   @id @default(uuid()) 
   ods             String?
-  
   userId          String   @unique @map("usuarioId") 
   user            User     @relation(fields: [userId], references: [id]) 
 
@@ -37,13 +34,18 @@ model ONG {
 }
 
 model Empresa {
-  id              String   @id @default(uuid()) 
-  
-  userId          String   @unique @map("usuarioId") 
-  user            User     @relation(fields: [userId], references: [id]) 
+  id                                 String    @id @default(uuid()) 
+  userId                             String    @unique @map("usuarioId") 
+  user                               User      @relation(fields: [userId], references: [id]) 
 
-  apoios          Apoio[]
-  criterios       Criterio[]
+  quantidadeAcoesConscientizacao     Int?      @map("quantidade_acoes_conscientizacao")
+  quantidadeODSAtuacao               Int?      @map("quantidade_ods_atuacao")
+  quantidadeONGsAtingidas            Int?      @map("quantidade_ongs_atingidas")
+  porcentagemColaboradoresEngajados  Float?    @map("porcentagem_colaboradores_engajados")
+  porcentagemOrcamentoVoluntariado   Float?    @map("porcentagem_orcamento_voluntariado")
+
+  apoios                             Apoio[]
+  criterios                          Criterio[]
 }
 
 model Prefeitura {
@@ -64,8 +66,7 @@ model Apoio {
 
   empresaId    String      
   ongId        String      
-  prefeituraId String?     
-
+  prefeituraId String?
   empresa      Empresa     @relation(fields: [empresaId], references: [id])
   ong          ONG         @relation(fields: [ongId], references: [id])
   prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
