@@ -1,12 +1,8 @@
-import seloService from '../SeloService'; // Importamos a instância, está correto
-import prisma from '../../database';
-import { PONTUACAO_POR_ONGS_ATINGIDAS } from '../../constants/seloConstants'; // Apenas para o exemplo do getPontosPorFaixa
+import seloService from '../../src/services/SeloService'; 
+import prisma from '../../src/database';
+import { PONTUACAO_POR_ONGS_ATINGIDAS } from '../../src/constants/seloConstants'; 
 
-/**
- * CORREÇÃO: O mock do Prisma precisa de simular o 'default' export,
- * pois o serviço importa com "import prisma from ...".
- */
-jest.mock('../../database', () => ({
+jest.mock('../../src/database', () => ({
   __esModule: true,
   default: {
     apoio: {
@@ -16,7 +12,6 @@ jest.mock('../../database', () => ({
 }));
 
 describe('SeloService - Testes Unitários', () => {
-  // Limpa os mocks após cada teste
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -35,7 +30,6 @@ describe('SeloService - Testes Unitários', () => {
     ]);
 
     const result = await seloService.calcularSeloParaEmpresa('empresa-teste');
-    // 1 ação = 5pts, 1 ONG = 5pts, 1 ODS = 5pts, valor < 1000 = 0pts. Total = 15pts.
     expect(result.seloAtual.tier).toBe('Bronze');
     expect(result.pontuacaoAtual).toBe(15);
   });
@@ -55,7 +49,6 @@ describe('SeloService - Testes Unitários', () => {
   });
 
   it('deve tratar corretamente apoios onde a ONG não tem ODS (nulo)', async () => {
-    // Este teste agora é mais específico, verificando se a pontuação de ODS é 0.
     (prisma.apoio.findMany as jest.Mock).mockResolvedValueOnce([
       { ongId: 'ong1', valor: 5000, ong: { ods: null } },
     ]);
@@ -71,11 +64,6 @@ describe('SeloService - Testes Unitários', () => {
     await expect(seloService.calcularSeloParaEmpresa('empresaX')).rejects.toThrow('DB error');
   });
 
-  /**
-   * CORREÇÃO: Teste para o método privado 'definirTierSelo'.
-   * Acessamos o método privado com a notação de parêntesis retos na instância do serviço.
-   * Cada expectativa testa um caso diferente.
-   */
   it('deve definir o tier correto para cada faixa de pontuação', () => {
     expect(seloService['definirTierSelo'](100).tier).toBe('Ouro');
     expect(seloService['definirTierSelo'](75).tier).toBe('Ouro');
@@ -86,12 +74,8 @@ describe('SeloService - Testes Unitários', () => {
     expect(seloService['definirTierSelo'](4).tier).toBe('Nenhum');
   });
 
-  /**
-   * CORREÇÃO: Teste para o método privado 'getPontosPorFaixa'.
-   * O princípio é o mesmo: aceder através da instância.
-   */
+
   it('deve retornar os pontos corretos para o método getPontosPorFaixa', () => {
-    // Usamos uma das regras reais para o teste
     const regras = PONTUACAO_POR_ONGS_ATINGIDAS;
 
     expect(seloService['getPontosPorFaixa'](10, regras).pontos).toBe(25); // 9 ou mais

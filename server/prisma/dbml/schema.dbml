@@ -25,6 +25,11 @@ Table Empresa {
   id String [pk]
   userId String [unique, not null]
   user User [not null]
+  quantidadeAcoesConscientizacao Int
+  quantidadeODSAtuacao Int
+  quantidadeONGsAtingidas Int
+  porcentagemColaboradoresEngajados Float
+  porcentagemOrcamentoVoluntariado Float
   apoios Apoio [not null]
   criterios Criterio [not null]
 }

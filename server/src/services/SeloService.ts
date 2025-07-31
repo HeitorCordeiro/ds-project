@@ -1,5 +1,5 @@
 import prisma from '../database';
-import HttpException  from '../middlewares/httpException';
+import HttpException from '../middlewares/httpException';
 import {
   PONTUACAO_TIERS,
   DESCRICOES_TIERS,
@@ -35,17 +35,18 @@ class SeloService {
         pontuacaoAtual: 0,
         seloAtual: seloInicial,
         detalhamento: [
-           { criterio: 'Ações de Apoio Realizadas', detalhe: 'Nenhuma ação realizada', pontos: 0 },
-           { criterio: 'ONGs Únicas Atingidas', detalhe: 'Nenhuma ONG parceira', pontos: 0 },
-           { criterio: 'ODSs Únicos Impactados', detalhe: 'Nenhum ODS abordado', pontos: 0 },
-           { criterio: 'Valor Total Doado', detalhe: 'Nenhum valor doado', pontos: 0 },
+          { criterio: 'Ações de Apoio Realizadas', detalhe: 'Nenhuma ação realizada', pontos: 0 },
+          { criterio: 'ONGs Únicas Atingidas', detalhe: 'Nenhuma ONG parceira', pontos: 0 },
+          { criterio: 'ODSs Únicos Impactados', detalhe: 'Nenhum ODS abordado', pontos: 0 },
+          { criterio: 'Valor Total Doado', detalhe: 'Nenhum valor doado', pontos: 0 },
         ],
       };
     }
 
     const quantidadeAcoes = apoios.length;
     const ongsUnicas = new Set(apoios.map(a => a.ongId)).size;
-    const odsUnicos = new Set(apoios.map(a => a.ong.ods)).size;
+    const odsUnicos = new Set(apoios.map(a => a.ong.ods).filter(ods => ods)).size;
+
     const valorTotalDoado = apoios.reduce((sum, a) => sum + a.valor, 0);
 
     const resultadoAcoes = this.getPontosPorFaixa(quantidadeAcoes, PONTUACAO_POR_ACOES_REALIZADAS);
