@@ -8,6 +8,7 @@ AuthRouter.route('/')
     LoginController.login,
   );
 
+
 AuthRouter.route('/')
   .post(
     LoginController.authenticateByCnpj,
