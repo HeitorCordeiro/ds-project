@@ -16,6 +16,7 @@ Table Usuario {
 Table ONG {
   id Int [pk, increment]
   ods String
+  nome String [not null]
   usuarioId Int [unique, not null]
   usuario Usuario [not null]
   apoiosRecebidos Apoio [not null]

@@ -3,7 +3,7 @@ import { hash } from 'bcryptjs';
 import { UserRepository } from '../repositories';
 import { User, UpdateUser } from '../DTOs';
 import { TierService } from '../services/TierService';
-import HttpException from '../DTOs/middlewares/httpException';
+import HttpException from '../middlewares/httpException';
 
 class UserController {
   async create(req: Request, res: Response, next: NextFunction) {

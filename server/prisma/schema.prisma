@@ -28,7 +28,8 @@ model Usuario {
 model ONG {
   id             Int       @id @default(autoincrement())
   ods            String?
-  
+  nome            String 
+
   usuarioId      Int       @unique
   usuario        Usuario   @relation(fields: [usuarioId], references: [id])
 
@@ -62,7 +63,7 @@ model Apoio {
   valor        Float
   tipoAjuda    String
   documentacao String
-
+  
   empresaId    Int
   ongId        Int
   prefeituraId Int?
