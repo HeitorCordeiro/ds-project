@@ -12,37 +12,37 @@ userRoutes.post(
 
 userRoutes.get(
   '/',
-  auth,
+  //auth,
   requestHandler(UserController.getAll)
 );
 
 userRoutes.get(
   '/me/tier',
-  auth,
+  //auth,
   requestHandler(UserController.getTier)
 );
 
 userRoutes.get(
   '/:id/impact',
-  auth,
+  //auth,
   requestHandler(UserController.getImpact)
 );
 
 userRoutes.get(
   '/:id',
-  auth,
+  //auth,
   requestHandler(UserController.getById)
 );
 
 userRoutes.put(
   '/:id',
-  auth,
+  //auth,
   requestHandler(UserController.update)
 );
 
 userRoutes.delete(
   '/:id',
-  auth,
+  //auth,
   requestHandler(UserController.delete)
 );
 
